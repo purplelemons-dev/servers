@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download</title>
+</head>
+<body>
+    <style>
+        body {
+            background-color: #000;
+        }
+        .main-content {
+            text-align: center;
+            color: #754683/*#c678dd*/;
+        }
+    </style>
+    <div class="main-content">
+        <h2>Enter URL below to download...</h2>
+        <input id="url" type="text">
+        <button id="downloadbtn">Download!</button>
+    </div>
+    <script>
+        document.getElementById("downloadbtn").addEventListener("click", () => {
+            const url = document.getElementById("url").value;
+            // Post to server
+            fetch("/download?url=" + url, {
+                method: "POST"
+            })
+            .then(res => {
+                console.log(res.type);
+            })
+        });
+    </script>
+</body>
+</html>
