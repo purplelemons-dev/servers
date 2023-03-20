@@ -1,2 +1,6 @@
-josh/static/nogo
+josh/static/nogo*
 yt-dl/node_modules
+*__pycache__*
+*.venv*
+.gitignore
+*activate
