@@ -1,81 +1,12 @@
 
 import discord
-from discord.ext import commands
-import openai
-from json import dumps
-from traceback import print_exc
-import time
-from threading import Thread
 from server import run
+from threading import Thread
+from traceback import print_exc
+from discord.ext import commands
+from conversations import Conversations
 
 TOKEN = "MTA4NjUwMTE0MTU5NDAwMTQyOQ.G28Xmj.wFmque89bngTFMeYtJUgHdzkMZbipSPzfXoYAM"
-openai.api_key="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"
-
-class Conversations:
-    def __init__(self):
-        self.conversations:dict[int,list[dict[str,str]]] = {}
-        self.system_messages:dict[int,str] = {} # added to the conversation history before next_prompt is called
-
-    def __iter__(self):
-        return self.conversations.__iter__()
-    
-    def __getitem__(self, key):
-        return self.conversations[key]
-    
-    def __setitem__(self, key, value):
-        self.conversations[key] = value
-    
-    def get_history(self, member:discord.Member, stringify:bool=False):
-        try:
-            history = self.conversations[member.id].append({
-                "role": "system",
-                "content": self.system_messages[member.id]
-            })
-            if stringify:
-                return dumps(history)
-            return history
-        except KeyError:
-            return []
-
-    def add_history(self, member:discord.Member, role:str, content:str):
-        try:
-            self.conversations[member.id].append({"role": role, "content": content})
-        except KeyError:
-            self.conversations[member.id] = [{"role": role, "content": content}]
-    
-    def next_prompt(self, member:discord.Member, new_prompt:str):
-        self.add_history(member, "user", new_prompt)
-        response = None
-        while response is None:
-            try:
-                response = openai.ChatCompletion.create(
-                    model="gpt-4",
-                    messages=self.get_history(member)
-                )
-            except openai.error.RateLimitError:
-                time.sleep(5)
-
-        content:str = response.choices[0]["message"]["content"]
-        self.add_history(member, "assistant", content)
-        return content
-
-    def one(self,prompt:str):
-        response = None
-        while response is None:
-            try:
-                response = openai.ChatCompletion.create(
-                    model="gpt-4",
-                    messages=[{"role": "user", "content": prompt}]
-                )
-            except openai.error.RateLimitError:
-                time.sleep(5)
-
-        content:str = response.choices[0]["message"]["content"]
-        return content
-    
-    def clear(self, member:discord.Member):
-        self.conversations[member.id] = []
-        
 
 conversations = Conversations()
 
@@ -100,13 +31,33 @@ async def prompt(ctx: discord.commands.context.ApplicationContext, message: str)
         print_exc()
         await ctx.respond("there was an error. let MR_H3ADSH0T#0001 know", ephemeral=True)
 
-@bot.slash_command(name="one", description="Will not create a persistent conversation. This is useful for instructions or quick questions.")
-async def one(ctx: discord.commands.context.ApplicationContext, message: str):
+@bot.slash_command(name="big", description="big text :D")
+async def big(ctx: discord.commands.context.ApplicationContext, file: discord.Attachment):
+    # read the file
+    text = await file.read()
+    text = text.decode("utf-8")
     try:
         # send a temporary message to the user
         await ctx.respond("Thinking...", ephemeral=True)
         # now let the model think
-        content = conversations.one(message)
+        content = conversations.next_prompt(ctx.author, text)
+        # ensure <2000 characters
+        if len(content) > 2000:
+            # if it's too long, send it as a file
+            await ctx.respond("My response seems to be too large for discord, here's a file that contains it.", file=discord.File(content, filename="big.txt"))
+            return
+        await ctx.edit(content=content)
+    except Exception as e:
+        print_exc()
+        await ctx.respond("there was an error. let MR_H3ADSH0T#0001 know", ephemeral=True)
+
+@bot.slash_command(name="one", description="Will not create a persistent conversation. This is useful for instructions or quick questions.")
+async def one(ctx: discord.commands.context.ApplicationContext, message: str, system:str=None):
+    try:
+        # send a temporary message to the user
+        await ctx.respond("Thinking...", ephemeral=True)
+        # now let the model think
+        content = conversations.one(message, system)
         # ensure <2000 characters
         if len(content) > 2000:
             content = content[:2000]
@@ -167,7 +118,7 @@ system = bot.create_group(name="system", description="System commands")
 @system.command()
 async def set(ctx: discord.commands.context.ApplicationContext, content:str):
     try:
-        conversations.add_history(ctx.author, "system", content)
+        conversations.system_messages[ctx.author.id] = content
         await ctx.respond(f"Set system message to `{content}`", ephemeral=True)
     except Exception as e:
         print_exc()
@@ -178,6 +129,15 @@ async def clear(ctx: discord.commands.context.ApplicationContext):
     try:
         conversations.clear(ctx.author)
         await ctx.respond("Cleared system messages", ephemeral=True)
+    except Exception as e:
+        print_exc()
+        await ctx.respond("there was an error. let MR_H3ADSH0T#0001 know", ephemeral=True)
+
+@system.command()
+async def query(ctx: discord.commands.context.ApplicationContext):
+    try:
+        content = conversations.system_messages.get(ctx.author.id, "None")
+        await ctx.respond(f"System message is `{content}`", ephemeral=True)
     except Exception as e:
         print_exc()
         await ctx.respond("there was an error. let MR_H3ADSH0T#0001 know", ephemeral=True)

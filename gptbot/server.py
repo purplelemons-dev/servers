@@ -1,6 +1,6 @@
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from .gptbot import Conversations
+from conversations import Conversations
 
 class GPTBotHandler(BaseHTTPRequestHandler):
 
