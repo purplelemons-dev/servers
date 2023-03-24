@@ -4,3 +4,4 @@ yt-dl/node_modules
 *.venv*
 .gitignore
 *activate
+gptbot/big.txt

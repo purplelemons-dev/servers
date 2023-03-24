@@ -25,9 +25,12 @@ async def prompt(ctx: discord.commands.context.ApplicationContext, message: str)
         content = conversations.next_prompt(ctx.author, message)
         # ensure <2000 characters
         if len(content) > 2000:
-            content = content[:2000]
+            with open("big.txt", "w") as f:
+                f.write(content)
+            await ctx.respond("My response seems to be too large for discord, here's a file that contains it.", file=discord.File("big.txt", filename="big.txt"), ephemeral=True)
+            return            
         await ctx.edit(content=content)
-    except Exception as e:
+    except Exception:
         print_exc()
         await ctx.respond("there was an error. let MR_H3ADSH0T#0001 know", ephemeral=True)
 
@@ -44,10 +47,12 @@ async def big(ctx: discord.commands.context.ApplicationContext, file: discord.At
         # ensure <2000 characters
         if len(content) > 2000:
             # if it's too long, send it as a file
-            await ctx.respond("My response seems to be too large for discord, here's a file that contains it.", file=discord.File(content, filename="big.txt"))
+            with open("big.txt", "w") as f:
+                f.write(content)
+            await ctx.respond("My response seems to be too large for discord, here's a file that contains it.", file=discord.File("big.txt", filename="big.txt"), ephemeral=True)
             return
         await ctx.edit(content=content)
-    except Exception as e:
+    except Exception:
         print_exc()
         await ctx.respond("there was an error. let MR_H3ADSH0T#0001 know", ephemeral=True)
 
@@ -60,9 +65,12 @@ async def one(ctx: discord.commands.context.ApplicationContext, message: str, sy
         content = conversations.one(message, system)
         # ensure <2000 characters
         if len(content) > 2000:
-            content = content[:2000]
+            with open("big.txt", "w") as f:
+                f.write(content)
+            await ctx.respond("My response seems to be too large for discord, here's a file that contains it.", file=discord.File("big.txt", filename="big.txt"), ephemeral=True)
+            return
         await ctx.edit(content=content)
-    except Exception as e:
+    except Exception:
         print_exc()
         await ctx.respond("there was an error. let MR_H3ADSH0T#0001 know", ephemeral=True)
 
@@ -71,19 +79,23 @@ async def reset(ctx: discord.commands.context.ApplicationContext):
     try:
         conversations.clear(ctx.author)
         await ctx.respond("Conversation history cleared", ephemeral=True)
-    except Exception as e:
+    except Exception:
         print_exc()
         await ctx.respond("there was an error. let MR_H3ADSH0T#0001 know", ephemeral=True)
 
-@bot.slash_command(name="history", description="Sends a ")
+@bot.slash_command(name="history", description="Sends a copy of your conversation history in a code block.")
 async def history(ctx: discord.commands.context.ApplicationContext):
     try:
         history = conversations.get_history(ctx.author, stringify=True)
+        history = history.replace('```','\`\`\`')
         stringify = f"```json\n{history}\n```"
         if len(stringify) > 2000:
-            stringify = stringify[:2000]
+            with open("big.txt", "w") as f:
+                f.write(stringify)
+            await ctx.respond("Your conversation history seems to be too large for discord, here's a file that contains it.", file=discord.File("big.txt", filename="big.txt"), ephemeral=True)
+            return
         await ctx.respond(stringify, ephemeral=True)
-    except Exception as e:
+    except Exception:
         print_exc()
         await ctx.respond("there was an error. let MR_H3ADSH0T#0001 know", ephemeral=True)
 
@@ -96,7 +108,7 @@ async def subscribe(ctx: discord.commands.context.ApplicationContext):
             await ctx.respond("Subscribed to the AI newsfeed", ephemeral=True)
         else:
             await ctx.respond("You're already subscribed to the AI newsfeed use /unsubscribe to no longer be pinged.", ephemeral=True)
-    except Exception as e:
+    except Exception:
         print_exc()
         await ctx.respond("there was an error. let MR_H3ADSH0T#0001 know", ephemeral=True)
 
@@ -109,7 +121,7 @@ async def unsubscribe(ctx: discord.commands.context.ApplicationContext):
             await ctx.respond("Unsubscribed from the AI newsfeed", ephemeral=True)
         else:
             await ctx.respond("You're not subscribed to the AI newsfeed use /subscribe to do so.", ephemeral=True)
-    except Exception as e:
+    except Exception:
         print_exc()
         await ctx.respond("there was an error. let MR_H3ADSH0T#0001 know", ephemeral=True)
 
@@ -120,7 +132,7 @@ async def set(ctx: discord.commands.context.ApplicationContext, content:str):
     try:
         conversations.system_messages[ctx.author.id] = content
         await ctx.respond(f"Set system message to `{content}`", ephemeral=True)
-    except Exception as e:
+    except Exception:
         print_exc()
         await ctx.respond("there was an error. let MR_H3ADSH0T#0001 know", ephemeral=True)
 
@@ -129,7 +141,7 @@ async def clear(ctx: discord.commands.context.ApplicationContext):
     try:
         conversations.clear(ctx.author)
         await ctx.respond("Cleared system messages", ephemeral=True)
-    except Exception as e:
+    except Exception:
         print_exc()
         await ctx.respond("there was an error. let MR_H3ADSH0T#0001 know", ephemeral=True)
 
@@ -138,7 +150,7 @@ async def query(ctx: discord.commands.context.ApplicationContext):
     try:
         content = conversations.system_messages.get(ctx.author.id, "None")
         await ctx.respond(f"System message is `{content}`", ephemeral=True)
-    except Exception as e:
+    except Exception:
         print_exc()
         await ctx.respond("there was an error. let MR_H3ADSH0T#0001 know", ephemeral=True)
 

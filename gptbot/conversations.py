@@ -40,8 +40,12 @@ class Conversations:
         except KeyError:
             self.conversations[member.id] = [{"role": role, "content": content}]
     
-    def next_prompt(self, member:discord.Member, new_prompt:str):
-        self.add_history(member, "user", new_prompt.replace("\n"," "))
+    def next_prompt(self, member:discord.Member, new_prompt:str=None):
+        """
+        Generates the next prompt for a given `member` and adds it to the current conversation.
+        """
+        if new_prompt is not None:
+            self.add_history(member, "user", new_prompt.replace("\n"," "))
         response = None
         while response is None:
             try:
@@ -55,7 +59,8 @@ class Conversations:
         self.add_history(member, "assistant", content)
         return content
 
-    def one(self,prompt:str, system:str=None):
+    def one(self, prompt:str, system:str=None):
+        prompt = prompt.replace("\n"," ")
         response = None
         messages = [{"role": "user", "content": prompt}]
         if system is not None:
