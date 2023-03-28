@@ -2,9 +2,22 @@
 import time
 import openai
 import discord
-from json import dumps
+from json import dumps, loads
 
 openai.api_key="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"
+
+class shared_resource:
+    """
+    Used to allow the main thread to shut down subsequent threads
+    """
+    def __init__(self,conversations):
+        self.running = True
+        self.conversations = conversations
+    def stop(self):
+        """
+        Sets the `running` property to `False`. All tasks listening to this will stop.
+        """
+        self.running = False
 
 class Conversations:
     def __init__(self):
@@ -20,6 +33,24 @@ class Conversations:
     def __setitem__(self, key, value):
         self.conversations[key] = value
     
+    def tryload(self,filename:str):
+        """
+        Attempts to load a conversation history from a file.
+        Fails silently if the file does not exist.
+        """
+        try:
+            with open(filename, "r") as f:
+                self.conversations = loads(f.read())
+        except FileNotFoundError:
+            pass
+    
+    def save(self,filename:str):
+        """
+        Saves the conversation history to a file.
+        """
+        with open(filename, "w") as f:
+            f.write(dumps(self.conversations))
+
     def get_history(self, member:discord.Member, stringify:bool=False):
         try:
             history = self.conversations[member.id]

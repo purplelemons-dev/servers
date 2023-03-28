@@ -1,20 +1,33 @@
 
-api_key = "AIzaSyC40ZLoiS3fNIsSSmqc56B0NYbsDUe0Cvw"
-search_engine_id = "22b6102675f074222"
+from time import sleep, perf_counter
+from threading import Thread
 
-import requests
+class shared:
+    def __init__(self):
+        self.running = True
+        self.history = []
+    def off(self):
+        self.running = False
+    def display(self):
+        print(self.history)
 
-def google_search(query:str,num=5) -> list[str]:
-    params = {
-        "key": api_key,
-        "cx": search_engine_id,
-        "q": query,
-        "num": 10
-    }
-    r = requests.get(f"https://customsearch.googleapis.com/customsearch/v1", params=params)
-    if r.status_code == 200:
-        return [item["link"] for item in r.json()["items"]]
-    return []
+def thread1task(resource:shared):
+    while resource.running:
+        sleep(1)
+    print("t1 done")
 
-if __name__ == "__main__":
-    print(google_search("python"))
+res = shared()
+t1 = Thread(target=thread1task, args=(res,))
+t1.start()
+while True:
+    try:
+        usin = input(">>> ")
+        if usin == "exit":
+            raise KeyboardInterrupt
+        else:
+            res.history.append(usin)
+    except KeyboardInterrupt:
+        res.off()
+        res.display()
+        t1.join()
+        break

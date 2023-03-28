@@ -5,3 +5,5 @@ yt-dl/node_modules
 .gitignore
 *activate
 gptbot/big.txt
+gptbot/public/nicepage.css
+.env

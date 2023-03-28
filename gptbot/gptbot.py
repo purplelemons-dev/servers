@@ -1,18 +1,34 @@
 
 import discord
 from server import run
+from json import dumps
 from threading import Thread
 from traceback import print_exc
 from discord.ext import commands
-from conversations import Conversations
+from conversations import Conversations, shared_resource
+from time import sleep, perf_counter
+from requests import get as requests_get
 
 TOKEN = "MTA4NjUwMTE0MTU5NDAwMTQyOQ.G28Xmj.wFmque89bngTFMeYtJUgHdzkMZbipSPzfXoYAM"
 
 conversations = Conversations()
+conversations.tryload("conversations.json")
 
 intents = discord.Intents.default()
 intents.members = True
 intents.messages = True
+
+class Bot(commands.Bot):
+
+    async def on_ready(self):
+        print(f"Logged in as {self.user} (ID: {self.user.id})")
+        print("------")
+        while self.res.running:
+            # a bit janky, but the bot will essentially wait until the resource is stopped
+            # basically a polling rate of 1 second
+            sleep(1)
+        print("Stopping bot...")
+        await self.close()
 
 bot = commands.Bot(command_prefix='/', intents=intents)
 
@@ -87,7 +103,7 @@ async def reset(ctx: discord.commands.context.ApplicationContext):
 async def history(ctx: discord.commands.context.ApplicationContext):
     try:
         history = conversations.get_history(ctx.author, stringify=True)
-        history = history.replace('```','\`\`\`')
+        history = dumps(history).replace('```','``‎`')
         stringify = f"```json\n{history}\n```"
         if len(stringify) > 2000:
             with open("big.txt", "w") as f:
@@ -155,11 +171,23 @@ async def query(ctx: discord.commands.context.ApplicationContext):
         await ctx.respond("there was an error. let MR_H3ADSH0T#0001 know", ephemeral=True)
 
 if __name__ == "__main__":
-    http_server = Thread(target=run, args=(conversations,))
+    res = shared_resource(conversations)
+
+    http_server = Thread(target=run, args=(res,))
+    bot_thread = Thread(target=bot.run, args=(TOKEN,))
     try:
+        bot_thread.start()
         http_server.start()
-        bot.run(TOKEN)
+        while True:
+            user_input = input(">>> ")
+            if user_input == "exit":
+                raise KeyboardInterrupt
     except KeyboardInterrupt:
         print("Exiting...")
+        res.stop()
+        # dont make fun of me for this. its the only way.
+        requests_get("http://127.0.0.1:10002/")
+        bot_thread.join()
         http_server.join()
+        conversations.save()
         exit(0)
