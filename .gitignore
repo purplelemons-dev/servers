@@ -7,3 +7,4 @@ yt-dl/node_modules
 gptbot/big.txt
 gptbot/public/nicepage.css
 .env
+gptbot/sessions.json

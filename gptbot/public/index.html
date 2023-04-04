@@ -28,7 +28,7 @@
             <div class="u-container-style u-layout-cell u-size-30 u-layout-cell-1">
               <div class="u-container-layout u-container-layout-1">
                 <div class="u-form u-form-1">
-                  <form action="#" method="POST" class="u-clearfix u-form-spacing-10 u-form-vertical u-inner-form" source="custom" name="form" style="padding: 10px;">
+                  <div class="u-clearfix u-form-spacing-10 u-form-vertical u-inner-form" source="custom" name="form" style="padding: 10px;">
                     <div class="u-form-group u-form-message">
                       <label for="message-3e7b" class="u-label">System</label>
                       <textarea id="system-message" placeholder="You are a helpful assistant..." rows="4" cols="50" id="message-3e7b" name="system" class="u-border-1 u-border-grey-30 u-input u-input-rectangle u-white" required=""></textarea>
@@ -36,7 +36,7 @@
                     <div class="u-form-send-message u-form-send-success">Thank you! Your message has been sent.</div>
                     <div class="u-form-send-error u-form-send-message"> Unable to send your message. Please fix errors then try again. </div>
                     <input type="hidden" value="" name="recaptchaResponse">
-                  </form>
+                  </div>
                 </div>
                 <a onclick="generate_response();" class="u-btn u-btn-round u-button-style u-radius-8 u-btn-1" title="Generates a new assistant message" rel="nofollow">Generate</a>
               </div>
@@ -47,15 +47,14 @@
                   <!-- List items of conversations appear here. Add in reverse order (e.g. new messages append to top) -->
                 </ul>
                 <div class="u-form u-form-2">
-                  <form action="#" method="POST" class="u-clearfix u-form-spacing-10 u-form-vertical u-inner-form" source="custom" name="form-1" style="padding: 10px;">
+                  <div class="u-clearfix u-form-spacing-10 u-form-vertical u-inner-form" source="custom" name="form-1" style="padding: 10px;">
                     <div class="u-form-group u-form-name">
                       <label for="name-bd9d" class="u-label">Prompt</label>
-                      <input type="text" placeholder="Enter a prompt..." id="name-bd9d" name="prompt" class="u-border-1 u-border-grey-30 u-input u-input-rectangle u-white" required="">
+                      <input type="text" placeholder="Enter a prompt..." id="name-bd9d" class="u-border-1 u-border-grey-30 u-input u-input-rectangle u-white" required="">
                     </div>
                     <div class="u-form-send-message u-form-send-success"> Thank you! Your message has been sent. </div>
                     <div class="u-form-send-error u-form-send-message"> Unable to send your message. Please fix errors then try again. </div>
-                    <input type="hidden" value="" name="recaptchaResponse">
-                  </form>
+                  </div>
                 </div>
               </div>
             </div>

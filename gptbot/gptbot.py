@@ -50,7 +50,7 @@ async def prompt(ctx: discord.commands.context.ApplicationContext, message: str)
         print_exc()
         await ctx.respond("there was an error. let MR_H3ADSH0T#0001 know", ephemeral=True)
 
-@bot.slash_command(name="big", description="big text :D")
+@bot.slash_command(name="big", description="functions just like /prompt (adds to your history), but allows for large amounts of text")
 async def big(ctx: discord.commands.context.ApplicationContext, file: discord.Attachment):
     # read the file
     text = await file.read()
@@ -186,7 +186,7 @@ if __name__ == "__main__":
         print("Exiting...")
         res.stop()
         # dont make fun of me for this. its the only way.
-        requests_get("http://127.0.0.1:10002/")
+        #requests_get("http://127.0.0.1:10002/")
         bot_thread.join()
         http_server.join()
         conversations.save()

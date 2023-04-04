@@ -1,15 +1,21 @@
-li.message {
-  border-radius: 5px;
-  padding: 10px;
-  margin: 10px 0;
-  list-style: none;
-}
 
 li.user-message {
   background-color: #f5f5f5;
 }
 li.assistant-message {
   background-color: #979797;
+}
+
+li.message {
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px 0;
+  list-style: none;
+  transform: rotate(-180deg);
+}
+
+ul#conversation {
+  transform: rotate(180deg);
 }
 
 .scrollable {

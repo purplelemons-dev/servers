@@ -6,23 +6,19 @@ from json import dumps, loads
 
 openai.api_key="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"
 
-class shared_resource:
-    """
-    Used to allow the main thread to shut down subsequent threads
-    """
-    def __init__(self,conversations):
-        self.running = True
-        self.conversations = conversations
-    def stop(self):
-        """
-        Sets the `running` property to `False`. All tasks listening to this will stop.
-        """
-        self.running = False
-
 class Conversations:
+
+    openai = openai
+
     def __init__(self):
         self.conversations:dict[int,list[dict[str,str]]] = {}
         self.system_messages:dict[int,str] = {} # added to the conversation history before next_prompt is called
+
+    def __str__(self) -> str:
+        return str(self.conversations)
+    
+    def __repr__(self) -> str:
+        return self.__str__()
 
     def __iter__(self):
         return self.conversations.__iter__()
@@ -71,6 +67,26 @@ class Conversations:
         except KeyError:
             self.conversations[member.id] = [{"role": role, "content": content}]
     
+    def next_prompt_stream(self, member:discord.Member, new_prompt:str=None):
+        """
+        USE FOR `CONTENT-TYPE: TEXT/EVENTSTREAM` ONLY
+
+        Generates the next prompt for a given `member` and adds it to the current conversation.
+        """
+        if new_prompt is not None:
+            self.add_history(member, "user", new_prompt.replace("\n"," "))
+        response = None
+        while response is None:
+            try:
+                response = openai.ChatCompletion.create(
+                    model="gpt-4",
+                    messages=self.get_history(member),
+                    stream=True
+                )
+            except openai.error.RateLimitError:
+                time.sleep(5)
+        return response
+
     def next_prompt(self, member:discord.Member, new_prompt:str=None):
         """
         Generates the next prompt for a given `member` and adds it to the current conversation.
@@ -110,3 +126,16 @@ class Conversations:
     
     def clear(self, member:discord.Member):
         self.conversations[member.id] = []
+
+class shared_resource:
+    """
+    Used to allow the main thread to shut down subsequent threads
+    """
+    def __init__(self,conversations:Conversations):
+        self.running = True
+        self.conversations = conversations
+    def stop(self):
+        """
+        Sets the `running` property to `False`. All tasks listening to this will stop.
+        """
+        self.running = False
