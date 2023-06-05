@@ -1,0 +1,51 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cursor Tracker</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+    .cursor {
+      position: absolute;
+      pointer-events: none;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: red;
+      transform: translate(-50%, -50%);
+    }
+  </style>
+</head>
+<body>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    document.addEventListener('mousemove', (event) => {
+      const cursorData = {
+        x: event.clientX,
+        y: event.clientY,
+        id: socket.id,
+      };
+      socket.emit('cursor move', cursorData);
+    });
+
+    socket.on('cursor move', (cursorData) => {
+      let cursor = document.getElementById(cursorData.id);
+      if (!cursor) {
+        cursor = document.createElement('div');
+        cursor.className = 'cursor';
+        cursor.id = cursorData.id;
+        document.body.appendChild(cursor);
+      }
+      cursor.style.left = `${cursorData.x}px`;
+      cursor.style.top = `${cursorData.y}px`;
+    });
+  </script>
+</body>
+</html>

@@ -8,3 +8,9 @@ gptbot/big.txt
 gptbot/public/nicepage.css
 .env
 gptbot/sessions.json
+env.py
+geckodriver.log
+*/node_modules
+package-lock.json
+cookies.txt
+shit/*

@@ -3,6 +3,7 @@ import discord
 from discord import app_commands
 from discord.ext import tasks
 import server
+from .env import TOKEN
 from asyncio import run as async_run
 from json import loads
 
@@ -10,7 +11,7 @@ class Client(discord.Client):
     def __init__(self, *args, **kwargs):
         self.message_queue:list[str] = []
         self.running=False
-        self.TOKEN = "MTA2ODM2OTkxMDMyNzE0ODY0NA.GsYvcu.PMEgafS0BTMIxp5tyQZRPFauBRzKy_ZSFFf7D8"
+        self.TOKEN = TOKEN
         self.CYBERGUILD:discord.Guild = discord.Object(1066424595617423420) # type: ignore
         self.BOT_CHANNEL=1068380985424621598
         self.httpServer = server.create_server(self)

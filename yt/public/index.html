@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get captions</title>
+</head>
+<body>
+    <input type="text" id="url_input" placeholder="enter youtube url">
+    <button onclick="get_transcript(document.querySelector('#url_input').value)">Get captions</button>
+    <textarea id="transcript" placeholder="transcript will appear here" readonly></textarea>
+    <script src="scripts/main.js"></script>
+</body>
+</html>
