@@ -3,8 +3,9 @@ import time
 import openai
 import discord
 from json import dumps, loads
+from .env import OPENAI_API_KEY
 
-openai.api_key="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"
+openai.api_key = OPENAI_API_KEY
 
 class Conversations:
 
