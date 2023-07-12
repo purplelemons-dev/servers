@@ -8,7 +8,7 @@ from discord.ext import commands
 from conversations import Conversations, shared_resource
 from time import sleep, perf_counter
 from requests import get as requests_get
-from .env import TOKEN
+from env import TOKEN
 
 conversations = Conversations()
 conversations.tryload("conversations.json")

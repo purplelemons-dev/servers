@@ -3,7 +3,7 @@ import time
 import openai
 import discord
 from json import dumps, loads
-from .env import OPENAI_API_KEY
+from env import OPENAI_API_KEY
 
 openai.api_key = OPENAI_API_KEY
 

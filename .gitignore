@@ -14,3 +14,5 @@ geckodriver.log
 package-lock.json
 cookies.txt
 shit/*
+gptbot/public/nicepage.css
+yt-py/audio.m4a
